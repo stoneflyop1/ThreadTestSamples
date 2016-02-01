@@ -36,6 +36,13 @@ namespace TestWeb.Controllers
             return View((object)"https://www.baidu.com");
         }
 
+        //no lock
+        public ActionResult WaitFalse()
+        {
+            var content = GetContentConfigWaitFalseAsync("https://www.baidu.com").Result;
+            return View((object)"https://www.baidu.com");
+        }
+
         private static async Task<string> GetContentAsync(string url)
         {
             using (var client = new HttpClient())
@@ -64,6 +71,15 @@ namespace TestWeb.Controllers
                     return await res.Content.ReadAsStringAsync();
                 }
             });
+        }
+
+        private static async Task<string> GetContentConfigWaitFalseAsync(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync(url).ConfigureAwait(false);
+                return await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+            }
         }
     }
 }
