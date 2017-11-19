@@ -10,37 +10,44 @@ namespace TestWeb.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly string Host = "https://www.baidu.com";
         // no lock
         public async Task<ActionResult> Index()
         {
-            var content = await GetContentAsync("https://www.baidu.com");
-            return View((object)"https://www.baidu.com");
+            var content = await GetContentAsync(Host);
+            return View((object)Host);
         }
         //no lock
         public ActionResult Result()
         {
-            var content = GetContent("https://www.baidu.com");
-            return View((object)"https://www.baidu.com");
+            var content = GetContent(Host);
+            return View((object)Host);
         }
         // lock
         public ActionResult Lock()
         {
-            var content = GetContentAsync("https://www.baidu.com").Result;
-            return View((object)"https://www.baidu.com");
+            var content = GetContentAsync(Host).Result;
+            return View((object)Host);
         }
 
         //no lock
         public ActionResult Pool()
         {
-            var content = GetContentWithPoolAsync("https://www.baidu.com").Result;
-            return View((object)"https://www.baidu.com");
+            var content = GetContentWithPoolAsync(Host).Result;
+            return View((object)Host);
+        }
+        // no lock
+        public async Task<ActionResult> PoolAsync()
+        {
+            var content = await GetContentWithPoolAsync(Host);
+            return View((object)Host);
         }
 
         //no lock
         public ActionResult WaitFalse()
         {
-            var content = GetContentConfigWaitFalseAsync("https://www.baidu.com").Result;
-            return View((object)"https://www.baidu.com");
+            var content = GetContentConfigWaitFalseAsync(Host).Result;
+            return View((object)Host);
         }
 
         private static async Task<string> GetContentAsync(string url)
