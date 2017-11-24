@@ -11,16 +11,29 @@ namespace TestWeb.Controllers
     public class HomeController : Controller
     {
         private readonly string Host = "https://www.baidu.com";
-        // no lock
-        public async Task<ActionResult> Index()
-        {
-            var content = await GetContentAsync(Host);
-            return View((object)Host);
-        }
+
+        #region GetContent
         //no lock
         public ActionResult Result()
         {
             var content = GetContent(Host);
+            return View((object)Host);
+        }
+        private static string GetContent(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var res = client.GetAsync(url).Result;
+                return res.Content.ReadAsStringAsync().Result;
+            }
+        }
+        #endregion GetContent
+
+        #region GetContentAsync
+        // no lock
+        public async Task<ActionResult> Index()
+        {
+            var content = await GetContentAsync(Host);
             return View((object)Host);
         }
         // lock
@@ -29,7 +42,17 @@ namespace TestWeb.Controllers
             var content = GetContentAsync(Host).Result;
             return View((object)Host);
         }
+        private static async Task<string> GetContentAsync(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var res = await client.GetAsync(url);
+                return await res.Content.ReadAsStringAsync();
+            }
+        }
+        #endregion GetContentAsync
 
+        #region GetContentWithPoolAsync
         //no lock
         public ActionResult Pool()
         {
@@ -42,32 +65,6 @@ namespace TestWeb.Controllers
             var content = await GetContentWithPoolAsync(Host);
             return View((object)Host);
         }
-
-        //no lock
-        public ActionResult WaitFalse()
-        {
-            var content = GetContentConfigWaitFalseAsync(Host).Result;
-            return View((object)Host);
-        }
-
-        private static async Task<string> GetContentAsync(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                var res = await client.GetAsync(url);
-                return await res.Content.ReadAsStringAsync();
-            }
-        }
-
-        private static string GetContent(string url)
-        {
-            using (var client = new HttpClient())
-            {
-                var res = client.GetAsync(url).Result;
-                return res.Content.ReadAsStringAsync().Result;
-            }
-        }
-
         private static Task<string> GetContentWithPoolAsync(string url)
         {
             return Task.Run(async () =>
@@ -79,7 +76,21 @@ namespace TestWeb.Controllers
                 }
             });
         }
+        #endregion GetContentWithPoolAsync
 
+        #region GetContentConfigWaitFalseAsync
+        //no lock
+        public ActionResult WaitFalse()
+        {
+            var content = GetContentConfigWaitFalseAsync(Host).Result;
+            return View((object)Host);
+        }
+        // no lock
+        public async Task<ActionResult> WaitFalseAsync()
+        {
+            var content = await GetContentConfigWaitFalseAsync(Host);
+            return View((object)Host);
+        }
         private static async Task<string> GetContentConfigWaitFalseAsync(string url)
         {
             using (var client = new HttpClient())
@@ -88,5 +99,6 @@ namespace TestWeb.Controllers
                 return await res.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
         }
+        #endregion GetContentConfigWaitFalseAsync
     }
 }

@@ -160,6 +160,7 @@
     <Content Include="scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Home\WaitFalse.cshtml" />
     <Content Include="Views\Home\PoolAsync.cshtml" />
+    <Content Include="Views\Home\WaitFalseAsync.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
